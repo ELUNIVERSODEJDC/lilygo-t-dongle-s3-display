@@ -11,4 +11,4 @@ Prerequisites
 LilyGO T-Dongle S3
 Arduino IDE or PlatformIO
 
-![Alt text](https://github.com/ELUNIVERSODEJDC/lilygo-t-dongle-s3-display/blob/main/Preview/testgreen.jpg) "Optional title")
+![Alt text](https://github.com/ELUNIVERSODEJDC/lilygo-t-dongle-s3-display/blob/main/Preview/testgreen.jpg)
