@@ -1,0 +1,128 @@
+///By Jorge Diaz-Crespo Valdes. ///
+//////////////////////////////////
+#include <LovyanGFX.hpp>
+// Crear una instancia de LGFX
+class LGFX : public lgfx::LGFX_Device
+{
+  lgfx::Panel_ST7735S _panel_instance; // Panel específico
+  lgfx::Bus_SPI _bus_instance; // Bus SPI específico
+
+public:
+  LGFX(void)
+  {
+    {
+      auto cfg = _bus_instance.config(); // Obtener la configuración del bus SPI
+
+      cfg.spi_host = SPI2_HOST; // SPI2_HOST para ESP32 S3
+      cfg.spi_mode = 0;
+      cfg.freq_write = 40000000;
+      cfg.freq_read = 16000000;
+      cfg.spi_3wire = true;
+      cfg.use_lock = true;
+      cfg.dma_channel = SPI_DMA_CH_AUTO;
+      cfg.pin_sclk = 5; // TFT_SCL_PIN IO05
+      cfg.pin_mosi = 3; // TFT_SDA_PIN IO03
+      cfg.pin_miso = -1;
+      cfg.pin_dc = 2;   // TFT_DC_PIN IO02
+
+      _bus_instance.config(cfg); // Aplicar la configuración al bus SPI
+      _panel_instance.setBus(&_bus_instance); // Establecer el bus al panel
+    }
+
+    {
+      auto cfg = _panel_instance.config(); // Obtener la configuración del panel
+
+      cfg.pin_cs = 4;    // TFT_CS_PIN IO04
+      cfg.pin_rst = 1;   // TFT_RES_PIN IO01
+      cfg.pin_busy = -1; // No se utiliza el pin ocupado
+
+      // Configuración de la pantalla
+      cfg.panel_width = 109; // Ancho de la pantalla
+      cfg.panel_height = 162; // Alto de la pantalla
+      cfg.offset_x = 0;
+      cfg.offset_y = 0;
+      cfg.offset_rotation = 0;
+      cfg.dummy_read_pixel = 8;
+      cfg.dummy_read_bits = 1;
+      cfg.readable = false;
+      cfg.invert = false;
+      cfg.rgb_order = false;
+      cfg.dlen_16bit = false;
+      cfg.bus_shared = false;
+
+      _panel_instance.config(cfg);
+    }
+
+    setPanel(&_panel_instance);
+  }
+};
+
+LGFX tft;
+
+int rotationState = 1;
+
+// Función para convertir colores hexadecimales a formato RGB565
+uint16_t hexToRGB565(uint32_t hex) {
+  uint8_t r = (hex >> 16) & 0xFF;
+  uint8_t g = (hex >> 8) & 0xFF;
+  uint8_t b = hex & 0xFF;
+  return tft.color565(r, g, b);
+}
+
+// Definir colores hexadecimales
+uint16_t colorGreen = hexToRGB565(0x00FF00); // Verde
+uint16_t colorPurple = hexToRGB565(0x800080); // Violeta
+
+void setup() {
+  pinMode(0, INPUT_PULLUP); // Configurar el pin IO00 como entrada con resistencia pull-up
+  tft.init();
+  tft.setRotation(rotationState);
+  tft.setTextSize(2);
+  tft.setTextDatum(lgfx::middle_center);
+
+  // Configurar el color del texto (blanco) y sin fondo
+  tft.setTextColor(TFT_WHITE);
+
+  // Dibujar el contenido inicial
+  drawContent();
+}
+
+void loop() {
+  if (digitalRead(0) == LOW) { // Si el botón IO00 se presiona
+    delay(50); // Anti-rebote
+    while (digitalRead(0) == LOW); // Esperar a que se suelte el botón
+    delay(50); // Anti-rebote
+
+    // Cambiar la rotación
+    rotationState = (rotationState == 1) ? 3 : 1; // Alternar entre 1 y 3
+    tft.setRotation(rotationState);
+
+    // Dibujar el contenido según la nueva rotación
+    drawContent();
+  }
+
+  // No se necesita más código en el loop para este ejemplo
+}
+
+void drawContent() {
+  // Cambiar el fondo según la rotación
+  if (rotationState == 1) {
+    tft.fillScreen(colorGreen); // Fondo verde (Pantalla 1)
+    pantalla1();
+  } else {
+    tft.fillScreen(colorPurple); // Fondo violeta (Pantalla 2)
+    pantalla2();
+  }
+}
+
+void pantalla1() {
+  // Redibujar texto con la nueva rotación para pantalla 1 (fondo violeta)
+  tft.drawString("Hola", 80 /* Ancho (izquierda-derecha) */, 30 /* Alto (arriba-abajo) */); // Coordenadas centradas para 110x160
+  tft.drawString("Mundo", 80 /* Ancho (izquierda-derecha) */, 50 /* Alto (arriba-abajo) */); // Coordenadas centradas para 110x160
+}
+
+void pantalla2() {
+  // Redibujar texto con la nueva rotación para pantalla 2 (fondo verde)
+  tft.drawString("Hola", 80 /* Ancho (izquierda-derecha) */, 50 /* Alto (arriba-abajo) */); // Coordenadas centradas para 110x160
+  tft.drawString("Mundo", 80 /* Ancho (izquierda-derecha) */, 70 /* Alto (arriba-abajo) */); // Coordenadas centradas para 110x160
+}
