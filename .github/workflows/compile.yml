@@ -1,0 +1,20 @@
+name: compile
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install arduino-cli
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh
+          sudo mv bin/arduino-cli /usr/local/bin/
+      - name: Compile example
+        run: |
+          arduino-cli core update-index
+          arduino-cli compile --fqbn esp32:esp32:esp32s3 ./lilygo-t-dongle-s3-display-test.ino
+
