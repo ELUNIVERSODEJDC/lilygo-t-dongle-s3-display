@@ -116,13 +116,13 @@ void drawContent() {
 }
 
 void pantalla1() {
-  // Redibujar texto con la nueva rotación para pantalla 1 (fondo violeta)
+  // Redibujar texto con la nueva rotación para pantalla 1 (fondo verde)
   tft.drawString("Hola", 80 /* Ancho (izquierda-derecha) */, 30 /* Alto (arriba-abajo) */); // Coordenadas centradas para 110x160
   tft.drawString("Mundo", 80 /* Ancho (izquierda-derecha) */, 50 /* Alto (arriba-abajo) */); // Coordenadas centradas para 110x160
 }
 
 void pantalla2() {
-  // Redibujar texto con la nueva rotación para pantalla 2 (fondo verde)
+  // Redibujar texto con la nueva rotación para pantalla 2 (fondo violeta)
   tft.drawString("Hola", 80 /* Ancho (izquierda-derecha) */, 50 /* Alto (arriba-abajo) */); // Coordenadas centradas para 110x160
   tft.drawString("Mundo", 80 /* Ancho (izquierda-derecha) */, 70 /* Alto (arriba-abajo) */); // Coordenadas centradas para 110x160
 }
